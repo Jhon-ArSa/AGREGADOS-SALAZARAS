@@ -1,0 +1,457 @@
+<?php
+require_once __DIR__ . '/db/config.php';
+
+// Cargar datos dinámicos de la base de datos
+$materiales = $pdo->query("SELECT * FROM materiales WHERE activo = 1 ORDER BY orden, id")->fetchAll();
+
+$statsRows = $pdo->query("SELECT clave, valor FROM estadisticas")->fetchAll();
+$stats = [];
+foreach ($statsRows as $r) $stats[$r['clave']] = (int)$r['valor'];
+$sAE = $stats['anos_experiencia']    ?? 15;
+$sPE = $stats['proyectos_ejecutados'] ?? 1200;
+$sCS = $stats['clientes_satisfechos'] ?? 950;
+$sCO = $stats['confiabilidad']        ?? 99;
+
+$noticias = $pdo->query("SELECT * FROM noticias WHERE activo = 1 ORDER BY created_at DESC LIMIT 3")->fetchAll();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Agregados - Venta y transporte de materiales para construcción en Huancayo y zonas aledañas. Arena, piedra, grava y más con servicio fiable y asesoría técnica.">
+    <meta name="keywords" content="agregados, venta de materiales, arena, piedra, grava, Huancayo, construcción">
+    <meta property="og:title" content="Agregados - Materiales para Construcción">
+    <meta property="og:description" content="Venta y transporte de agregados: arena, piedra, grava y relleno. Servicio en Huancayo y zonas cercanas.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="img/logo.png">
+    <link rel="canonical" href="https://example.com/">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Agregados | Materiales para Construcción en Huancayo</title>
+    <link rel="icon" href="img/logo02.png" type="image/png">
+    <link rel="author" href="#">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Agregados",
+        "url": "https://example.com/",
+        "logo": "img/logo.png",
+        "contactPoint": [{"@type":"ContactPoint","telephone":"+51 964 636 092","contactType":"customer service","email":"jhonyaroni650@gmail.com","areaServed":"PE"}],
+        "address": {"@type":"PostalAddress","streetAddress":"Av. Arica #216","addressLocality":"Huancayo","addressRegion":"Junín","addressCountry":"PE"}
+    }
+    </script>
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader" aria-hidden="true">
+        <div class="preloader-inner">
+            <i class="ri-home-5-fill"></i>
+            <span>Agregados</span>
+            <div class="preloader-barra"></div>
+        </div>
+    </div>
+
+    <a class="skip-link" href="#main-content">Saltar al contenido</a>
+
+    <header>
+        <a href="#" class="logo">
+            <i class="ri-home-5-fill"></i> <span> Agregados</span>
+        </a>
+
+        <ul class="navbar" role="navigation" aria-label="Menú principal">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#agregados">Agregados</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+            <?php if ($noticias): ?>
+            <li><a href="#noticias">Noticias</a></li>
+            <?php endif; ?>
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#parati">Para ti</a></li>
+        </ul>
+
+        <div class="main">
+            <a href="#contacto" class="user">
+                <i class="ri-arrow-right-down-box-fill"></i> Cotizar
+            </a>
+            <div class="bx bx-menu" id="menu-icon"></div>
+        </div>
+    </header>
+
+    <main id="main-content">
+    <section id="inicio" class="home" aria-label="Sección de inicio">
+        <video autoplay muted loop id="video-bg">
+            <source src="video-home.mp4" type="video/mp4">
+            Tu navegador no soporta videos HTML5.
+        </video>
+        <div class="home-content">
+            <img src="img/logo02.png" alt="Logo de Agregados" class="home-logo">
+            <h1>Bienvenido a Agregados</h1>
+            <p>Ofrecemos los mejores materiales para tus proyectos de construcción.</p>
+            <a href="https://wa.me/51964636092?text=Hola%20👋,%20estoy%20interesado(a)%20en%20sus%20servicios%20de%20materiales%20de%20construcción,%20retiro%20de%20desmonte%20y%20trabajos%20relacionados.%20¿Podrían%20brindarme%20más%20información,%20por%20favor?
+" class="btn-cotizar">Cotizar ahora</a>
+        </div>
+        <a href="#agregados" class="scroll-abajo" aria-label="Ir a la siguiente sección">
+            <i class="ri-arrow-down-line"></i>
+        </a>
+    </section>
+    </main>
+
+    <!-- Sección de Agregados (DINÁMICA) -->
+    <section id="agregados" class="agregados">
+        <h2 class="agregados-titulo">Nuestros Agregados</h2>
+        <p class="agregados-descripcion">Ofrecemos una amplia variedad de agregados para tus proyectos de construcción.</p>
+        <div class="agregados-contenedor">
+            <?php foreach ($materiales as $mat): ?>
+            <div class="agregado-card">
+                <?php if ($mat['imagen']): ?>
+                <img src="<?= htmlspecialchars($mat['imagen']) ?>"
+                     alt="<?= htmlspecialchars($mat['nombre']) ?>"
+                     class="agregado-imagen">
+                <?php else: ?>
+                <div class="agregado-imagen" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:3rem">
+                    <i class="ri-image-line"></i>
+                </div>
+                <?php endif; ?>
+                <div class="agregado-info">
+                    <h3><?= htmlspecialchars($mat['nombre']) ?></h3>
+                    <p><?= htmlspecialchars($mat['descripcion'] ?? '') ?></p>
+                    <a href="#contacto" class="agregado-boton">Pedir</a>
+                </div>
+            </div>
+            <?php endforeach; ?>
+            <?php if (!$materiales): ?>
+            <p style="text-align:center;color:#666;padding:40px">
+                Próximamente añadiremos nuestros materiales.
+            </p>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <section id="cobertura" class="cobertura">
+        <div class="cobertura-header">
+            <h2>Áreas de Cobertura</h2>
+            <p>Llevamos nuestros materiales de construcción a las siguientes zonas.</p>
+        </div>
+        <div class="carrusel-container">
+            <button class="carrusel-btn anterior">&#10094;</button>
+            <div class="carrusel">
+                <div class="carrusel-track">
+                    <div class="slide activo">
+                        <img src="img/huancayo.jpg" alt="Huancayo">
+                        <div class="slide-info"><h3>Huancayo</h3><p>Servicio rápido y confiable en toda la ciudad.</p></div>
+                    </div>
+                    <div class="slide">
+                        <img src="img/jauja.jpg" alt="Jauja">
+                        <div class="slide-info"><h3>Jauja</h3><p>Cobertura urbana y rural con entregas seguras.</p></div>
+                    </div>
+                    <div class="slide">
+                        <img src="img/huancavelica.jpg" alt="Huancavelica">
+                        <div class="slide-info"><h3>Huancavelica</h3><p>Atención personalizada y logística eficiente.</p></div>
+                    </div>
+                    <div class="slide">
+                        <img src="img/concepcion.jpg" alt="Concepción">
+                        <div class="slide-info"><h3>Concepción</h3><p>Llegamos a todas las localidades del distrito.</p></div>
+                    </div>
+                    <div class="slide">
+                        <img src="img/chupaca.jpg" alt="Chupaca">
+                        <div class="slide-info"><h3>Chupaca</h3><p>Entregas programadas y urgentes.</p></div>
+                    </div>
+                </div>
+            </div>
+            <button class="carrusel-btn siguiente">&#10095;</button>
+        </div>
+        <div class="carrusel-paginacion"></div>
+    </section>
+
+    <section id="servicios" class="servicios">
+        <div class="servicios-header">
+            <h2>Nuestros Servicios</h2>
+            <p>Brindamos soluciones integrales en agregados, transporte y logística para la construcción.</p>
+        </div>
+        <div class="servicios-contenedor">
+            <div class="servicio-card">
+                <div class="servicio-img"><img src="img/agregados.jpg" alt="Venta de agregados"></div>
+                <i class="ri-truck-fill"></i>
+                <h3>Venta de Agregados</h3>
+                <p>Venta de arena, piedra, confitillo y material chancado de alta calidad.</p>
+            </div>
+            <div class="servicio-card">
+                <div class="servicio-img"><img src="img/volquete.jpg" alt="Transporte de materiales"></div>
+                <i class="ri-road-map-fill"></i>
+                <h3>Transporte de Materiales</h3>
+                <p>Traslado seguro y puntual de materiales directamente a tu obra.</p>
+            </div>
+            <div class="servicio-card">
+                <div class="servicio-img"><img src="img/desmonte.jpg" alt="Desalojo de desmonte"></div>
+                <i class="ri-delete-bin-6-fill"></i>
+                <h3>Desalojo de Desmonte</h3>
+                <p>Retiro eficiente de desmonte y residuos de obra cumpliendo normas.</p>
+            </div>
+            <div class="servicio-card">
+                <div class="servicio-img"><img src="img/logistica.jpg" alt="Logística de construcción"></div>
+                <i class="ri-route-fill"></i>
+                <h3>Logística y Distribución</h3>
+                <p>Planificación y coordinación logística para proyectos de cualquier escala.</p>
+            </div>
+            <div class="servicio-card">
+                <div class="servicio-img"><img src="img/ASESORIA.jpg" alt="Asesoría técnica"></div>
+                <i class="ri-customer-service-fill"></i>
+                <h3>Asesoría Técnica</h3>
+                <p>Te asesoramos en la selección y uso adecuado de materiales.</p>
+            </div>
+            <div class="servicio-card">
+                <div class="servicio-img"><img src="img/proyectos.jpg" alt="Proyectos personalizados"></div>
+                <i class="ri-tools-fill"></i>
+                <h3>Proyectos Personalizados</h3>
+                <p>Desarrollamos soluciones a medida para proyectos especiales.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Nosotros (estadísticas DINÁMICAS) -->
+    <section class="nosotros" id="nosotros">
+        <div class="nosotros-header">
+            <h2>Sobre Nosotros</h2>
+            <p>Comprometidos con la calidad, la puntualidad y la confianza en cada proyecto.</p>
+        </div>
+        <div class="nosotros-contenedor">
+            <div class="nosotros-info">
+                <h3>¿Quiénes Somos?</h3>
+                <p>
+                    Somos una empresa con más de <strong><?= $sAE ?> años de experiencia</strong> en el rubro de la construcción,
+                    especializada en la venta, transporte y logística de agregados.
+                    Trabajamos con estándares de calidad que garantizan resultados eficientes y seguros en cada obra.
+                </p>
+                <div class="mision-vision">
+                    <div>
+                        <h4>Misión</h4>
+                        <p>Proveer materiales de construcción de alta calidad, con un servicio eficiente y oportuno, contribuyendo al desarrollo de proyectos sólidos y duraderos.</p>
+                    </div>
+                    <div>
+                        <h4>Visión</h4>
+                        <p>Ser la empresa líder en la región, reconocida por la excelencia operativa, innovación logística y atención técnica especializada.</p>
+                    </div>
+                </div>
+                <a href="#contacto" class="btn-saber-mas">Contáctanos</a>
+            </div>
+            <div class="estadisticas">
+                <div class="estadistica">
+                    <i class="ri-calendar-check-fill"></i>
+                    <h3 class="estadistica-numero" data-target="<?= $sAE ?>">0</h3>
+                    <p>Años de experiencia</p>
+                </div>
+                <div class="estadistica">
+                    <i class="ri-checkbox-circle-fill"></i>
+                    <h3 class="estadistica-numero" data-target="<?= $sPE ?>">0</h3>
+                    <p>Proyectos ejecutados</p>
+                </div>
+                <div class="estadistica">
+                    <i class="ri-user-heart-fill"></i>
+                    <h3 class="estadistica-numero" data-target="<?= $sCS ?>">0</h3>
+                    <p>Clientes satisfechos</p>
+                </div>
+                <div class="estadistica">
+                    <i class="ri-shield-check-fill"></i>
+                    <h3 class="estadistica-numero" data-target="<?= $sCO ?>">0</h3>
+                    <p>% de confiabilidad</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="testimonios" id="testimonios">
+        <div class="testimonios-header">
+            <h2>Lo que dicen nuestros clientes</h2>
+            <p>La confianza de quienes construyen es nuestra mayor recompensa.</p>
+        </div>
+        <div class="testimonios-contenedor">
+            <div class="testimonio-card">
+                <div class="testimonio-estrellas"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                <p class="testimonio-texto">"La calidad de los agregados es excelente. Mis obras han quedado perfectas gracias a los materiales que me proporcionaron. La entrega fue puntual y el precio muy competitivo."</p>
+                <div class="testimonio-autor">
+                    <div class="testimonio-avatar"><i class="ri-user-fill"></i></div>
+                    <div><strong>Carlos Quispe</strong><span>Constructor independiente, Huancayo</span></div>
+                </div>
+            </div>
+            <div class="testimonio-card">
+                <div class="testimonio-estrellas"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                <p class="testimonio-texto">"Llevo 3 proyectos trabajando con Agregados y la experiencia ha sido inmejorable. El equipo es muy profesional y siempre tienen el material disponible cuando lo necesito."</p>
+                <div class="testimonio-autor">
+                    <div class="testimonio-avatar"><i class="ri-user-fill"></i></div>
+                    <div><strong>María Torres</strong><span>Arquitecta, Huancayo</span></div>
+                </div>
+            </div>
+            <div class="testimonio-card">
+                <div class="testimonio-estrellas"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i></div>
+                <p class="testimonio-texto">"El servicio de transporte es muy eficiente. Siempre llegan a tiempo y los materiales vienen bien medidos. Los recomiendo sin dudar a cualquier maestro de obra."</p>
+                <div class="testimonio-autor">
+                    <div class="testimonio-avatar"><i class="ri-user-fill"></i></div>
+                    <div><strong>Roberto Huanca</strong><span>Maestro de obra, Jauja</span></div>
+                </div>
+            </div>
+            <div class="testimonio-card">
+                <div class="testimonio-estrellas"><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i></div>
+                <p class="testimonio-texto">"Construí mi casa con sus materiales y quedé muy contenta. Me asesoraron perfectamente sobre qué tipo de arena y piedra necesitaba. Excelente atención personalizada."</p>
+                <div class="testimonio-autor">
+                    <div class="testimonio-avatar"><i class="ri-user-fill"></i></div>
+                    <div><strong>Ana Mendoza</strong><span>Propietaria, Concepción</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Noticias (DINÁMICA — solo aparece si hay noticias activas) -->
+    <?php if ($noticias): ?>
+    <section class="noticias" id="noticias">
+        <div class="noticias-header">
+            <h2>Noticias</h2>
+            <p>Últimas novedades y actualizaciones de la empresa.</p>
+        </div>
+        <div class="noticias-contenedor">
+            <?php foreach ($noticias as $n): ?>
+            <div class="noticia-card">
+                <?php if ($n['imagen']): ?>
+                <div class="noticia-img">
+                    <img src="<?= htmlspecialchars($n['imagen']) ?>"
+                         alt="<?= htmlspecialchars($n['titulo']) ?>">
+                </div>
+                <?php endif; ?>
+                <div class="noticia-body">
+                    <span class="noticia-fecha">
+                        <?= date('d M Y', strtotime($n['created_at'])) ?>
+                    </span>
+                    <h3><?= htmlspecialchars($n['titulo']) ?></h3>
+                    <p><?= htmlspecialchars($n['resumen'] ?? '') ?></p>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <section class="para-ti" id="parati">
+        <h2 class="para-ti-titulo">Para Ti</h2>
+        <p class="para-ti-subtitulo">Soluciones pensadas para cada etapa de tu proyecto de construcción</p>
+        <div class="para-ti-bloque">
+            <div class="para-ti-texto">
+                <h3>Materiales de Calidad Garantizada</h3>
+                <p>Arena gruesa, arena fina, confitillo y piedra chancada, seleccionados para brindar resistencia y durabilidad en cada obra.</p>
+                <a href="#contacto" class="btn-accion">Solicitar materiales</a>
+            </div>
+            <div class="para-ti-imagen">
+                <img src="img/costruccion.jpg" alt="Materiales de construcción">
+            </div>
+        </div>
+        <div class="para-ti-bloque inverso">
+            <div class="para-ti-texto">
+                <h3>Transporte Rápido y Seguro</h3>
+                <p>Contamos con volquetes propios para entregas puntuales directamente en tu obra, sin retrasos.</p>
+                <a href="#contacto" class="btn-accion">Consultar transporte</a>
+            </div>
+            <div class="para-ti-imagen">
+                <img src="img/maquina.jpg" alt="Transporte de materiales">
+            </div>
+        </div>
+        <div class="para-ti-bloque">
+            <div class="para-ti-texto">
+                <h3>Asesoría Técnica Personalizada</h3>
+                <p>Te ayudamos a elegir el material adecuado según el tipo de obra, evitando desperdicios y reduciendo costos.</p>
+                <a href="#contacto" class="btn-accion">Hablar con un asesor</a>
+            </div>
+            <div class="para-ti-imagen">
+                <img src="img/matialdecostruccion.jpg" alt="Asesoría en obra">
+            </div>
+        </div>
+    </section>
+
+    <section class="contacto" id="contacto">
+        <h2 class="contacto-titulo">Contáctanos</h2>
+        <p class="contacto-descripcion">Estamos listos para ayudarte. Comunícate con nosotros por llamada, correo o WhatsApp.</p>
+        <div class="contacto-contenedor">
+            <div class="contacto-card">
+                <div class="info-item">
+                    <i class="ri-map-pin-fill"></i>
+                    <div><h3>Dirección</h3><p>Av. Arica #216, Huancayo – Pilcomayo, Perú</p></div>
+                </div>
+                <div class="info-item">
+                    <i class="ri-phone-fill"></i>
+                    <div><h3>Teléfono</h3><p><a href="tel:+51964636092">+51 964 636 092</a></p></div>
+                </div>
+                <div class="info-item">
+                    <i class="ri-mail-fill"></i>
+                    <div><h3>Correo</h3><p><a href="mailto:jhonyaroni650@gmail.com">jhonyaroni650@gmail.com</a></p></div>
+                </div>
+                <a href="https://wa.me/51964636092?text=Hola,%20me%20gustaría%20recibir%20más%20información%20sobre%20sus%20servicios."
+                   target="_blank" class="btn-whatsapp">
+                    <i class="ri-whatsapp-fill"></i> Escríbenos por WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-contenedor">
+            <div class="footer-columna">
+                <a href="#" class="footer-logo">
+                    <i class="ri-home-5-fill"></i> <span>Agregados</span>
+                </a>
+                <p class="footer-descripcion">Ofrecemos los mejores materiales para tus proyectos de construcción. Calidad y confiabilidad garantizada.</p>
+            </div>
+            <div class="footer-columna">
+                <h3 class="footer-titulo">Enlaces Rápidos</h3>
+                <ul class="footer-enlaces">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#agregados">Agregados</a></li>
+                    <li><a href="#servicios">Servicios</a></li>
+                    <li><a href="#nosotros">Nosotros</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-columna">
+                <h3 class="footer-titulo">Contacto</h3>
+                <ul class="footer-contacto">
+                    <li><i class="ri-map-pin-fill"></i> Av. Arica #216, Huancayo Pilcomayo, Perú</li>
+                    <li><i class="ri-phone-fill"></i> <a href="tel:+51964636092">+51 964 636 092</a></li>
+                    <li><i class="ri-mail-fill"></i> <a href="mailto:jhonyaroni650@gmail.com">jhonyaroni650@gmail.com</a></li>
+                </ul>
+            </div>
+            <div class="footer-columna">
+                <h3 class="footer-titulo">Síguenos</h3>
+                <div class="footer-redes">
+                    <a href="#" class="red-social"><i class="ri-facebook-fill"></i></a>
+                    <a href="#" class="red-social"><i class="ri-instagram-fill"></i></a>
+                    <a href="#" class="red-social"><i class="ri-twitter-fill"></i></a>
+                    <a href="#" class="red-social"><i class="ri-linkedin-fill"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-derechos">
+            <p>&copy; <span id="anio"><?= date('Y') ?></span> Agregados. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp flotante -->
+    <a href="https://wa.me/51964636092?text=Hola,%20me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20servicios."
+       class="wa-flotante" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+        <i class="ri-whatsapp-fill"></i>
+        <span class="wa-tooltip">¡Escríbenos!</span>
+    </a>
+
+    <!-- Volver arriba -->
+    <button class="btn-top" id="btn-top" type="button" aria-label="Volver al inicio">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+
+    <script type="text/javascript" src="script.js"></script>
+</body>
+</html>
