@@ -1,0 +1,13 @@
+# robots.txt — Agregados Salazar
+# https://agregados-salazaras.vercel.app/
+
+User-agent: *
+Allow: /
+
+# Directorios que NO deben indexarse
+Disallow: /admin/
+Disallow: /db/
+Disallow: /uploads/
+
+# Sitemap para indexación rápida
+Sitemap: https://agregados-salazaras.vercel.app/sitemap.xml
